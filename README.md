@@ -16,7 +16,7 @@ Because tesla-microservice is a provided dependency, you must always specify two
 
 ```clojure
 :dependencies [[de.otto/tesla-microservice "0.1.15"]
-               [de.otto/tesla-jsonhome "0.1.0"]]
+               [de.otto/tesla-jsonhome "0.2.0"]]
 ```
 
 Add the `jsonhome`component to the base-system before starting it. 
@@ -26,13 +26,14 @@ Add the `jsonhome`component to the base-system before starting it.
 ```
 ### Adding Resources to the JSON-Home document
 
-Some resources will be added to your Json-Home document by default.
+Resources have to be added via the config of your tesla-microservice.
 
-If you have a tesla-microservice config like that:
+If you have a config like that:
 
 ```INI
-status.url=/your-status
-health.url=/your-health
+jsonhome.resources.status.href=/your-status
+jsonhome.resources.health.href=/your-health
+jsonhome.resources.health.title=Health Check
 ```
 
 This Json-Home document would be rendered:
@@ -40,8 +41,9 @@ This Json-Home document would be rendered:
 ```JSON
 {
   "resources": {
-    "healthcheck": {
+    "health": {
       "href": "/your-health"
+      "title": "Health Check"
     },
     "status": {
       "href": "/your-status"
@@ -50,30 +52,6 @@ This Json-Home document would be rendered:
 }
 ```
 
-You can add additional resources be providing a hash-map as an argument while creating the component:
-
-```clojure
-(jsonhome/new-jsonhome "/jsonhome/"  {:doc {:href "http://doc.example.com"
-                                            :title "Online Documentation"}})
-```
-
-And the rendered Json-Home document would look like this:
-
-```JSON
-{
-  "resources": {
-    "healthcheck": {
-      "href": "/your-health"
-    },
-    "status": {
-      "href": "/your-status"
-    },
-    "doc": {
-      "href": "http://doc.example.com",
-      "title" "Online Documentation"}
-  }
-}
-```
 ### Using Link-Relation prefixes
 
 It is common practice to use full-qualified names as keys in the resources hash.
@@ -85,12 +63,12 @@ For Example this config:
 jsonhome.link-rel-prefix=http://spec.example.com/link-rel/
 ```
 
-will produce this Json-Home document:
+will produce this Json-Home document like this:
 
 ```JSON
 {
   "resources": {
-    "http://spec.example.com/link-rel/healthcheck": {
+    "http://spec.example.com/link-rel/health": {
       "href": "/health"
     },
     "http://spec.example.com/link-rel/status": {

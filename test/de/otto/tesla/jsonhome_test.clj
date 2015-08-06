@@ -16,42 +16,28 @@
 
 (deftest ^:unit json-home-response-test
   (testing "without link-rel-prefix"
-    (u/with-started [started (serverless-system {:status-url "/my-status"
-                                                 :health-url "/my-health"})]
-                    (let [page (jsonhome/json-home-response started {})
-                          body (json/read-str (:body page) :key-fn keyword)
-                          _ (log/info body)]
-                      (testing "it shows status url by default"
+    (u/with-started [started (serverless-system {:jsonhome-resources-status-href "/my-status"
+                                                 :jsonhome-resources-health-href "/my-health"})]
+                    (let [page (jsonhome/json-home-response started)
+                          body (json/read-str (:body page) :key-fn keyword)]
+                      (testing "it shows the configured resources"
+                        (is (= (keys (:resources body))
+                               [:status
+                                :health]))
                         (is (= (get-in body [:resources :status])
-                               {:href "/my-status"})))
-                      (testing "it shows healthcheck url by default"
-                        (is (= (get-in body [:resources :healthcheck])
+                               {:href "/my-status"}))
+                        (is (= (get-in body [:resources :health])
                                {:href "/my-health"}))))))
   (testing "with link-rel-prefix"
-    (u/with-started [started (serverless-system {:status-url "/my-status"
-                                                 :health-url "/my-health"
+    (u/with-started [started (serverless-system {:jsonhome-resources-status-href "/my-status"
+                                                 :jsonhome-resources-health-href "/my-health"
                                                  :jsonhome-link-rel-prefix "http://spec.example.com/link-rel/"})]
-                    (let [page (jsonhome/json-home-response started {})
-                          body (json/read-str (:body page) :key-fn keyword)
-                          _ (log/info body)]
+                    (let [page (jsonhome/json-home-response started)
+                          body (json/read-str (:body page) :key-fn keyword)]
                       (testing "all resources have a prefix"
                         (is (= (keys (:resources body))
-                               [:http://spec.example.com/link-rel/status :http://spec.example.com/link-rel/healthcheck]))))))
-  (testing "with additional resources"
-    (u/with-started [started (serverless-system {:status-url "/my-status"
-                                                 :health-url "/my-health"})]
-                    (let [page (jsonhome/json-home-response started {:foo {:href "/abc"}
-                                                                     :bar {:title "Xyz AbC"}})
-                          body (json/read-str (:body page) :key-fn keyword)
-                          _ (log/info body)]
-                      (testing "default and additional resources are returned"
-                        (is (= (keys (:resources body))
-                               [:foo :bar :status :healthcheck])))
-                      (testing "it shows the complete additional resources"
-                        (is (= (get-in body [:resources :foo])
-                               {:href "/abc"}))
-                        (is (= (get-in body [:resources :bar])
-                               {:title "Xyz AbC"})))))))
+                               [:http://spec.example.com/link-rel/status
+                                :http://spec.example.com/link-rel/health])))))))
 
 (deftest ^:integration should-serve-jsonhome-under-given-url
   (testing "use the default url"
