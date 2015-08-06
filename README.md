@@ -42,7 +42,7 @@ This Json-Home document would be rendered:
 {
   "resources": {
     "health": {
-      "href": "/your-health"
+      "href": "/your-health",
       "title": "Health Check"
     },
     "status": {
