@@ -9,10 +9,13 @@
             [clojure.data.json :as json]
             [ring.mock.request :as mock]))
 
-(defn- serverless-system [runtime-config]
-  (-> (system/base-system runtime-config)
-      (assoc :jsonhome (c/using (jsonhome/new-jsonhome "/jsonhome/") [:config :handler]))
-      (dissoc :server)))
+(defn- serverless-system
+  ([runtime-config]
+   (serverless-system nil runtime-config))
+  ([url runtime-config]
+   (-> (system/base-system runtime-config)
+       (assoc :jsonhome (c/using (jsonhome/new-jsonhome url) [:config :handler]))
+       (dissoc :server))))
 
 (deftest ^:unit json-home-response-test
   (testing "without link-rel-prefix"
@@ -40,8 +43,13 @@
                                 :http://spec.example.com/link-rel/health])))))))
 
 (deftest ^:integration should-serve-jsonhome-under-given-url
-  (testing "use the default url"
-    (u/with-started [started (serverless-system {})]
+  (testing "prefer the passed url over the configured url"
+    (u/with-started [started (serverless-system "/jsonhome/" {:jsonhome-url "/some-other/jsonhome/"})]
                     (let [handlers (handler/handler (:handler started))]
                       (is (= (:status (handlers (mock/request :get "/jsonhome/")))
+                             200)))))
+  (testing "use the configured url in case no url is passed"
+    (u/with-started [started (serverless-system nil {:jsonhome-url "/some-other/jsonhome/"})]
+                    (let [handlers (handler/handler (:handler started))]
+                      (is (= (:status (handlers (mock/request :get "/some-other/jsonhome/")))
                              200))))))
