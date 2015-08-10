@@ -1,4 +1,4 @@
-(defproject de.otto/tesla-jsonhome "0.2.0"
+(defproject de.otto/tesla-jsonhome "0.2.1"
             :description "Addon to https://github.com/otto-de/tesla-microservice to render a JSON-HOME document."
             :url "https://github.com/otto-de/tesla-jsonhome"
             :license {:name "Apache License 2.0"

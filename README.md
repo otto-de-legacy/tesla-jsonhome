@@ -16,7 +16,7 @@ Because tesla-microservice is a provided dependency, you must always specify two
 
 ```clojure
 :dependencies [[de.otto/tesla-microservice "0.1.15"]
-               [de.otto/tesla-jsonhome "0.2.0"]]
+               [de.otto/tesla-jsonhome "0.2.1"]]
 ```
 
 Add the `jsonhome`component to the base-system before starting it. 
