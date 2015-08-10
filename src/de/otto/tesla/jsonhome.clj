@@ -9,28 +9,29 @@
 (defn prefix-keys [prefix [k v]]
   [(str prefix (name k)) v])
 
-(defn json-response-body [config]
-  (let [resources (get-in (parser/prop->nested-hash config) [:jsonhome :resources])
-        prefix (:jsonhome-link-rel-prefix config "")]
+(defn json-response-body [configuration]
+  (let [resources (get-in (parser/prop->nested-hash configuration) [:jsonhome :resources])
+        prefix (:jsonhome-link-rel-prefix configuration "")]
     {:resources (into {} (map (partial prefix-keys prefix) resources))}))
 
-(defn json-home-response [self]
-  (let [response-body (json-response-body (get-in self [:config :config]))]
+(defn json-home-response [configuration]
+  (let [response-body (json-response-body configuration)]
     {:status  200
      :headers {"Content-Type" "application/json-home"}
      :body    (json/write-str response-body :escape-slash false)}))
 
-(defn routes [self url]
+(defn routes [configuration url]
   (c/routes
-    (c/GET url [] (json-home-response self))))
+    (c/GET url [] (json-home-response configuration))))
 
 (defrecord JsonHome [config route-to handler]
   component/Lifecycle
   (start [self]
     (log/info "-> Starting JsonHome.")
-    (let [url (or (:route-to self)
-                  (get-in self [:config :config :jsonhome-url]))]
-      (handler/register-handler handler (routes self url))))
+    (let [configuration (:config config)
+          url (or route-to (:jsonhome-url configuration))]
+      (handler/register-handler handler (routes configuration url)))
+    self)
 
   (stop [self]
     (log/info "<- Stopping JsonHome")

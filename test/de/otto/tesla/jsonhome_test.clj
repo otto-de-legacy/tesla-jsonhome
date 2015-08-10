@@ -5,7 +5,6 @@
             [de.otto.tesla.stateful.handler :as handler]
             [de.otto.tesla.jsonhome :as jsonhome]
             [de.otto.tesla.util.test-utils :as u]
-            [clojure.tools.logging :as log]
             [clojure.data.json :as json]
             [ring.mock.request :as mock]))
 
@@ -21,7 +20,8 @@
   (testing "without link-rel-prefix"
     (u/with-started [started (serverless-system {:jsonhome-resources-status-href "/my-status"
                                                  :jsonhome-resources-health-href "/my-health"})]
-                    (let [page (jsonhome/json-home-response started)
+                    (let [configuration (get-in started [:config :config])
+                          page (jsonhome/json-home-response configuration)
                           body (json/read-str (:body page) :key-fn keyword)]
                       (testing "it shows the configured resources"
                         (is (= (keys (:resources body))
@@ -35,7 +35,8 @@
     (u/with-started [started (serverless-system {:jsonhome-resources-status-href "/my-status"
                                                  :jsonhome-resources-health-href "/my-health"
                                                  :jsonhome-link-rel-prefix "http://spec.example.com/link-rel/"})]
-                    (let [page (jsonhome/json-home-response started)
+                    (let [configuration (get-in started [:config :config])
+                          page (jsonhome/json-home-response configuration)
                           body (json/read-str (:body page) :key-fn keyword)]
                       (testing "all resources have a prefix"
                         (is (= (keys (:resources body))
