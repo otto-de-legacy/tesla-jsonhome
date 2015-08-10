@@ -20,19 +20,24 @@
      :headers {"Content-Type" "application/json-home"}
      :body    (json/write-str response-body :escape-slash false)}))
 
-(defn routes [self]
+(defn routes [self url]
   (c/routes
-    (c/GET (:route-to self) [] (json-home-response self))))
+    (c/GET url [] (json-home-response self))))
 
-(defrecord JsonHome [config handler]
+(defrecord JsonHome [config route-to handler]
   component/Lifecycle
   (start [self]
     (log/info "-> Starting JsonHome.")
-    (handler/register-handler handler (routes self)))
+    (let [url (or (:route-to self)
+                  (get-in self [:config :config :jsonhome-url]))]
+      (handler/register-handler handler (routes self url))))
 
   (stop [self]
     (log/info "<- Stopping JsonHome")
     self))
 
-(defn new-jsonhome [route-to]
-  (map->JsonHome {:route-to route-to}))
+(defn new-jsonhome
+  ([]
+   (new-jsonhome nil))
+  ([route-to]
+   (map->JsonHome {:route-to route-to})))
