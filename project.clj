@@ -7,9 +7,7 @@
         :url  "https://github.com/otto-de/tesla-jsonhome"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]]
-  :lein-release {:scm        :git
-                 :deploy-via :shell
-                 :shell      ["lein" "deploy" "clojars"]}
+  :lein-release {:deploy-via :clojars}
   :profiles {:provided {:dependencies [[de.otto/tesla-microservice "0.3.36"]
                                        [com.stuartsierra/component "0.3.1"]]}
              :dev      {:dependencies [[ring-mock "0.1.5"]]
