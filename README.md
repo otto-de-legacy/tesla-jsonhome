@@ -5,9 +5,9 @@ to [tesla-microservice](https://github.com/otto-de/tesla-microservice)
 that will produce a [json-home](http://tools.ietf.org/html/draft-nottingham-json-home-02) document
 with links to resources of your microservice. 
 
-[![Build Status](https://travis-ci.org/otto-de/tesla-jsonhome.svg?branch=master)](https://travis-ci.org/otto-de/tesla-jsonhome)
-
 [![Clojars Project](http://clojars.org/de.otto/tesla-jsonhome/latest-version.svg)](http://clojars.org/de.otto/tesla-jsonhome)
+
+[![Build Status](https://travis-ci.org/otto-de/tesla-jsonhome.svg?branch=master)](https://travis-ci.org/otto-de/tesla-jsonhome)
 [![Dependencies Status](http://jarkeeper.com/otto-de/tesla-jsonhome/status.svg)](http://jarkeeper.com/otto-de/tesla-jsonhome)
 
 ## Usage
@@ -15,7 +15,7 @@ with links to resources of your microservice.
 Because tesla-microservice is a provided dependency, you must always specify two dependencies in your project clj:
 
 ```clojure
-:dependencies [[de.otto/tesla-microservice "0.1.15"]
+:dependencies [[de.otto/tesla-microservice "0.3.36"]
                [de.otto/tesla-jsonhome "0.2.1"]]
 ```
 
